@@ -1,5 +1,5 @@
 from abc import ABC, abstractmethod
-from models.Products import Products
+from domain.models.Products import Products
 
 class ProductsInterface(ABC):
         @abstractmethod
