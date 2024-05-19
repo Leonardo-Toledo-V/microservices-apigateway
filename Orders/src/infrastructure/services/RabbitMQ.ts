@@ -8,9 +8,9 @@ export class RabbitMQ {
 
     async sendToQueue(message: any) {
         try {
-            const RABBITMQ_URL = process.env.RABBITMQ;
-            if (RABBITMQ_URL !== undefined) {
-                const connection = await amqp.connect(RABBITMQ_URL);
+            const RABBITMQ_URL_VARIABLE = process.env.RABBITMQ_URL;
+            if (RABBITMQ_URL_VARIABLE !== undefined) {
+                const connection = await amqp.connect(RABBITMQ_URL_VARIABLE);
                 const channel = await connection.createChannel();
                 const queue = 'orders_coliflor';
 

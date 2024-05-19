@@ -19,7 +19,7 @@ export class UpdateStatusController {
             }
             const order = await this.useCase.run(id, status)
             if (order) {
-                if (status == "enviado") {
+                if (status == "enviado" || status == 'Enviado') {
                     const orderProduct = await this.useCase.runView(id)
                     await this.mqtt.sendToQueue(orderProduct)
                 }

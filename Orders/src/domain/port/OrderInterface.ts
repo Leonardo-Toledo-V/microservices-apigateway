@@ -11,5 +11,5 @@ export interface OrderInterface{
     ):Promise<Order|null>
     changeStatus(id:string, status:string):Promise<Order|null>
     getAll():Promise<Order[]|null>
-    getOrderProducts(orderId:string):Promise<OrderProduct|null>
+    getOrderProducts(orderId:string):Promise<OrderProduct[]|null>
 }

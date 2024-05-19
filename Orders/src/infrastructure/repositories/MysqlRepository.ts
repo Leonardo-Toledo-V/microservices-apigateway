@@ -75,20 +75,21 @@ export class MysqlOrderRepository implements OrderInterface {
 
     }
 
-    async getOrderProducts(orderId: string) {
+    async getOrderProducts(orderId: string): Promise<OrderProduct[] | null> {
         try {
             const sql = "SELECT * FROM Orders_Products WHERE order_id=? AND deleted_at IS NULL"
             const params: any[] = [orderId]
             const [results]: any = await query(sql, params)
             if (results) {
-                const result = results[0]
-                return new OrderProduct(orderId, result.product_id, result.units, result.price, null)
+                return results.map((result: any) =>
+                    new OrderProduct(orderId, result.product_id, result.units, result.price, null)
+                );
             } else {
                 return null;
             }
         } catch (e) {
             console.log("repository error:\n", e)
-            return null
+            return null;
         }
     }
 
