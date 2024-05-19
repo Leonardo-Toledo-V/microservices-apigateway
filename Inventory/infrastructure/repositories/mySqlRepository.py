@@ -16,7 +16,7 @@ class Inventory(Base):
             "id": self.id,
             "name": self.name,
             "price": self.price,
-            "stock": self.stock
+            "stock": self.stock,
         }
     
 class InventoryRepository(ProductsInterface):
@@ -41,7 +41,15 @@ class InventoryRepository(ProductsInterface):
         return product
 
     def get_id_product(self, product_id):
-        print("****",product_id)
         if isinstance(product_id, Inventory):
             product_id = product_id.id
         return self.session.query(Inventory).filter(Inventory.id == product_id).first()
+    
+    def reduce_stock(self, product_id, units):
+        product = self.get_id_product(product_id)
+        if product and product.stock >= units:
+            product.stock -= units
+            self.session.commit()
+            return product
+        else:
+            raise ValueError("Stock insuficiente o producto no encontrado")
