@@ -1,7 +1,15 @@
-import { Order } from '../models/Order';
+import {Order} from "../models/Order";
+import {OrderProduct} from "../models/OrderProduct";
 
-export interface OrderInterface {
-    create(order: Order): Promise<Order | null>;
-    list(): Promise<Order[] | null>;
-    updateStatus(uuid: string, status: string): Promise<Order | null>;
+export interface OrderInterface{
+    create(
+        productId:string,
+        units:number,
+        total:number,
+        date:Date,
+        status:string
+    ):Promise<Order|null>
+    changeStatus(id:string, status:string):Promise<Order|null>
+    getAll():Promise<Order[]|null>
+    getOrderProducts(orderId:string):Promise<OrderProduct|null>
 }

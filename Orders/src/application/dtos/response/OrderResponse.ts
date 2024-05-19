@@ -4,11 +4,11 @@ interface Status{
 
 export class OrderResponse {
     public uuid: string;
-    public total: string;
+    public total: number;
     public date: Date;
     public status: Status;
 
-    constructor(uuid: string, total: string, date: Date, status: Status) {
+    constructor(uuid: string, total: number, date: Date, status: Status) {
         this.uuid = uuid;
         this.total = total;
         this.date = date;

@@ -1,19 +1,11 @@
-import { v4 as uuidv4 } from 'uuid';
 
-interface Status{
-    status: 'paid' | 'created' | 'sent';
-}
-
-export class Order {
-    public uuid: string;
-    public total: number;
-    public date: Date;
-    public status: Status;
-
-    constructor(total: number, status: Status) {
-        this.uuid = uuidv4();
-        this.total = total;
-        this.date = new Date();
-        this.status = status;
+export class Order{
+    constructor(
+        readonly id:string,
+        readonly total:number,
+        readonly date:Date,
+        readonly status: string,
+        readonly deleted_at: Date|null
+    ) {
     }
 }

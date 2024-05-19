@@ -1,27 +1,45 @@
-import { Request, Response } from 'express';
-import { BaseResponse } from '../../application/dtos/response/BaseResponse';
-import { UpdateStatusUseCase } from '../../application/useCases/UpdateStatusUseCase';
-import { UpdateStatusRequest } from '../../application/dtos/request/UpdateStatusRequest';
+import { Request, Response } from "express";
+import { UpdateStatusUseCase } from "../../application/useCases/UpdateStatusUseCase";
+import { RabbitMQ } from "../services/RabbitMQ";
+import { BaseResponse } from "../../application/dtos/response/BaseResponse";
 
 export class UpdateStatusController {
-    constructor(readonly useCase: UpdateStatusUseCase) { }
+    constructor(
+        readonly useCase: UpdateStatusUseCase,
+        readonly mqtt: RabbitMQ
+    ) { }
 
-    async execute(req: Request, res: Response) {
-        const {status } = req.body;
-        const {uuid} = req.params;
-        if(status !== 'paid' && status !== 'created' && status !== 'sent'){
-            const baseResponse = new BaseResponse(null, "Invalid status", false, 400);
-            return res.status(baseResponse.statusCode).json(baseResponse);
-        }
-        const request = new UpdateStatusRequest(uuid, status);
-
+    async run(req: Request, res: Response) {
         try {
-            const baseResponse = await this.useCase.execute(request);
-            res.status(baseResponse.statusCode).json(baseResponse);
-        } catch (error) {
-            console.error(error);
-            const baseResponse = new BaseResponse(null, "Internal server error", false, 500);
-            res.status(baseResponse.statusCode).json(baseResponse);
+            const id = req.params.id
+            const { status } = req.body
+            if (status !== 'Pagado' && status !== 'Creado' && status !=='Enviado' && status !=='pagado' && status !== 'creado' && status !=='enviado') {
+                const baseResponse = new BaseResponse(null, "Invalid status", false, 400);
+                return res.status(baseResponse.statusCode).json(baseResponse);
+            }
+            const order = await this.useCase.run(id, status)
+            if (order) {
+                if (status == "enviado") {
+                    const orderProduct = await this.useCase.runView(id)
+                    await this.mqtt.sendToQueue(orderProduct)
+                }
+                return res.status(201).send({
+                    status: "Success",
+                    data: order,
+                    message: "order status change success"
+                })
+            }
+            return res.status(417).send({
+                status: "error",
+                data: [],
+                message: "order status change fail"
+            })
+        } catch (e) {
+            console.log("request error", e)
+            return res.status(400).send({
+                message: "error",
+                error: e
+            })
         }
     }
 }

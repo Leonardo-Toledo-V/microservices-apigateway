@@ -12,12 +12,12 @@ export class RabbitMQ {
             if (RABBITMQ_URL !== undefined) {
                 const connection = await amqp.connect(RABBITMQ_URL);
                 const channel = await connection.createChannel();
-                const queue = 'ordenes_enviadas';
+                const queue = 'orders_coliflor';
 
                 await channel.assertQueue(queue, { durable: true });
                 channel.sendToQueue(queue, Buffer.from(JSON.stringify(message)), { persistent: true });
 
-                console.log('Mensaje enviado a la cola:', message);
+                console.log('Mensaje enviado a la coliflor:', message);
                 await channel.close();
                 await connection.close();
             } else {

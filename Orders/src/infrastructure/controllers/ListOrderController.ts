@@ -1,16 +1,33 @@
-import { Request, Response } from 'express';
-import { BaseResponse } from '../../application/dtos/response/BaseResponse';
-import {ListOrderUseCase} from '../../application/useCases/ListOrderUseCase'
+import { Request, Response } from "express";
+import { ListOrderUseCase } from "../../application/useCases/ListOrderUseCase";
 
-export class ListOrderController{
-    constructor(readonly useCase: ListOrderUseCase){}
-    async execute(req: Request, res: Response){
-        try{
-            const baseResponse = await this.useCase.execute();
-            res.status(baseResponse.statusCode).json(baseResponse);
-        }catch(error){
-            let baseResponse = new BaseResponse("Error", "Internal server error", false, 500);
-            res.status(baseResponse.statusCode).json(baseResponse);
+
+export class ListOrderController {
+    constructor(readonly useCase: ListOrderUseCase) {
+    }
+
+    async run(req: Request, res: Response) {
+        try {
+            const orders = await this.useCase.run()
+            if (orders) {
+                return res.status(201).send({
+                    status: "Success",
+                    data: orders,
+                    message: "orders get success"
+                })
+            }
+            return res.status(417).send({
+                status: "error",
+                data: [],
+                message: "orders get fail"
+            })
+        } catch (e) {
+
+            console.log("request error", e)
+            return res.status(400).send({
+                message: "error",
+                error: e
+            })
         }
     }
 }
